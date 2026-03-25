@@ -1,21 +1,21 @@
 class LogisticsCalculator:
-    def __init__(self, container_dims, box_dims):
-        """
-        dims: (largo, ancho, alto) en cm
-        """
-        self.c_l, self.c_w, self.c_h = container_dims
-        self.b_l, self.b_w, self.b_h = box_dims
+    def __init__(self, c_l, c_w, c_h):
+        # Dimensiones del contenedor (Largo, Ancho, Alto)
+        self.container = (c_l, c_w, c_h)
 
-    def calculate_max_boxes(self):
-        # Calcula orientación estándar (sin rotación compleja)
-        fit_l = self.c_l // self.b_l
-        fit_w = self.c_w // self.b_w
-        fit_h = self.c_h // self.b_h
+    def calculate_max_boxes(self, b_l, b_w, b_h):
+        # Validacion: dimensiones deben ser mayores a cero
+        if any(d <= 0 for d in self.container + (b_l, b_w, b_h)):
+            return 0
         
-        total_boxes = fit_l * fit_w * fit_h
-        return int(total_boxes)
+        # Calculo de cuantas cajas caben por cada eje
+        fit_l = self.container[0] // b_l
+        fit_w = self.container[1] // b_w
+        fit_h = self.container[2] // b_h
+        
+        return int(fit_l * fit_w * fit_h)
 
-    def volumetric_weight(self, weight_kg, divisor=5000):
-        # Estándar internacional para carga aérea/terrestre
-        volume = (self.b_l * self.b_w * self.b_h) / divisor
-        return max(weight_kg, volume)
+    def get_volumetric_weight(self, l, w, h, weight_kg, divisor=5000):
+        # Formula estandar de la industria logistica
+        vol_weight = (l * w * h) / divisor
+        return max(weight_kg, vol_weight)
